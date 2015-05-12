@@ -8,15 +8,6 @@
 #define NUMBER_OF_CHANNELS 4
 #define SIZE_OF_BUFFER 100
 
-const char* getfield(char* line, int num) {
-	const char* tok;
-	for (tok = strtok(line, ";"); tok && *tok; tok = strtok(NULL, ";\n")) {
-		if (!--num)
-			return tok;
-	}
-	return NULL;
-}
-
 int main(int argc, char **argv) {
 	int myRank, procCount;
 	double range;
