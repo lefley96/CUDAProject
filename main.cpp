@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 					MPI_COMM_WORLD);
 		}
 
+		fclose(stream);
+
 	} else {//worker
 		int inputNumbers[SIZE_OF_BUFFER];
 		printf("waiting for data, worker %d\n", myRank);
