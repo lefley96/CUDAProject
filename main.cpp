@@ -23,21 +23,31 @@ int main(int argc, char **argv) {
 
 	if (myRank == 0) { //master. reads data and splits into slave threads.
 		int inputNumbers[NUMBER_OF_CHANNELS][SIZE_OF_BUFFER];
+		int results[NUMBER_OF_CHANNELS][SIZE_OF_BUFFER];
+
 		FILE* stream = fopen("input.txt", "r");
 
+		//load data from input file
 		for (int i = 0; i < SIZE_OF_BUFFER; i++) {
 			for (int j = 0; j < NUMBER_OF_CHANNELS; j++) {
 				fscanf(stream, "%d", &inputNumbers[j][i]);
 			}
 		}
 
+		//send data to workers
 		for (int i = 1; i < NUMBER_OF_CHANNELS + 1; i++) {
 			printf("sending data to worker %d\n", i);
 			MPI_Send(&inputNumbers[i-1], SIZE_OF_BUFFER, MPI_INT, i, DATA,
 					MPI_COMM_WORLD);
 		}
-
 		fclose(stream);
+		
+		//gather results from workers
+		for (int i = 1; i < NUMBER_OF_CHANNELS + 1; i++) {
+			printf("waiting for data from worker %d\n", i);
+			MPI_Recv(&results[i-1], SIZE_OF_BUFFER, MPI_INT, i, DATA, MPI_COMM_WORLD, &status);
+		}
+		printf("received data from all workers\n");
 
 	} else {//worker
 		int inputNumbers[SIZE_OF_BUFFER];
@@ -46,7 +56,9 @@ int main(int argc, char **argv) {
 				MPI_COMM_WORLD, &status);
 		printf("received data, worker %d\n", myRank);
 		//kernel invocation...
-		printf("worker %d %d %d\n", myRank, inputNumbers[0], inputNumbers[SIZE_OF_BUFFER-1]);		
+		printf("worker %d %d %d\n", myRank, inputNumbers[0], inputNumbers[SIZE_OF_BUFFER-1]);
+		MPI_Send(&inputNumbers, SIZE_OF_BUFFER, MPI_INT, 0, DATA,
+					MPI_COMM_WORLD);	
 	}
 
 	MPI_Finalize();

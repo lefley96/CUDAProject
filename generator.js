@@ -6,7 +6,7 @@ var stream = fs.createWriteStream('input.txt', { flags: 'w' });
 
 for (var i = 0; i < samples; i++) {
 	for (var j = 0; j < channels; j++) {
-		stream.write(Math.floor(Math.random() * 100) + (j != channels - 1 ? ';' : '\n'));
+		stream.write(Math.floor(Math.random() * 100) + (j != channels - 1 ? ' ' : '\n'));
 	}
 }
 
