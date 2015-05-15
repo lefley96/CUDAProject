@@ -1,5 +1,12 @@
 # CUDAProject
 
-Compilation: <code>mpicc main.cpp</code>
+## building
+```
+build.sh
+```
 
-Executing: <code>mpirun -np [number of channels + 1] ./a.out</code>
+## running
+```
+run.sh <samples> <channels>
+```
+
