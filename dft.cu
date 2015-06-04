@@ -42,6 +42,7 @@ int chooseAndSetBestDevice() {
 						  max_multiprocessors = properties.multiProcessorCount;
 						  max_device = device;
 				  }
+		}
 	}
 	cudaSetDevice(max_device);
 	return max_device; 
