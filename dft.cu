@@ -1,8 +1,6 @@
 #include <cuda_runtime.h>
 #include <cuComplex.h>
 
-#define THREADS_PER_BLOCK 512
-
 __constant__ float EXPCONST = (-2.0 * 3.141592653);
 
 __device__ __forceinline__ cuComplex my_cexpf(cuComplex z) {
@@ -29,8 +27,34 @@ __global__ void dftKernel(cuComplex *input, cuComplex *output, int size) {
 		output[idx] = tempSum;
 	}
 }
+
+int chooseAndSetBestDevice() {
+	int num_devices, device;
+	
+	cudaGetDeviceCount(&num_devices);
+	if (num_devices > 1) {
+		  int max_multiprocessors = 0, max_device = 0;
+		  for (device = 0; device < num_devices; device++) {
+				  cudaDeviceProp properties;
+				  cudaGetDeviceProperties(&properties, device);
+				  if (max_multiprocessors < properties.multiProcessorCount) {
+						  max_multiprocessors = properties.multiProcessorCount;
+						  max_device = device;
+				  }
+	}
+	cudaSetDevice(max_device);
+}
+
+int getThreadsPerBlock(int currentDevice) {
+	cudaDeviceProp properties;
+	cudaGetDeviceProperties(&properties, currentDevice);
+	return properties.maxThreadsPerBlock;
+}
  
 extern "C" void dft(float* samples, int size, float* real, float* imag) {
+	int currentDevice = chooseAndSetBestDevice();
+	int THREADS_PER_BLOCK = getThreadsPerBlock(currentDevice);
+
 	cuComplex* complex_samples = (cuComplex*) malloc(size * sizeof(cuComplex));
 
 	int i;
@@ -56,7 +80,8 @@ extern "C" void dft(float* samples, int size, float* real, float* imag) {
 		imag[i] = cuCimagf(complex_samples[i]);
 	}
 
-	cudaFree(d_input);
 	cudaFree(d_output);
+	cudaFree(d_input);
+	free(complex_samples);
 }
 

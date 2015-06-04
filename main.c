@@ -105,6 +105,10 @@ int main(int argc, char **argv) {
 
 		MPI_Send(output_real, received_samples, MPI_FLOAT, 0, DATA, MPI_COMM_WORLD);
 		MPI_Send(output_imag, received_samples, MPI_FLOAT, 0, DATA, MPI_COMM_WORLD);
+		
+		free(received_input);
+		free(output_real);
+		free(output_imag);
         }
 
 	MPI_Barrier(MPI_COMM_WORLD);
