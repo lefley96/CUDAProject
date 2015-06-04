@@ -33,19 +33,19 @@ int chooseAndSetBestDevice() {
     int max_multiprocessors = 0, max_device = 0;
     
     cudaGetDeviceCount(&num_devices);
-	
+    
     if (num_devices > 1) {          
-		for (device = 0; device < num_devices; device++) {
-			cudaDeviceProp properties;
-			cudaGetDeviceProperties(&properties, device);
-			
-			if (max_multiprocessors < properties.multiProcessorCount) {
-				max_multiprocessors = properties.multiProcessorCount;
-				max_device = device;
-			}
-		}
+        for (device = 0; device < num_devices; device++) {
+            cudaDeviceProp properties;
+            cudaGetDeviceProperties(&properties, device);
+            
+            if (max_multiprocessors < properties.multiProcessorCount) {
+                max_multiprocessors = properties.multiProcessorCount;
+                max_device = device;
+            }
+        }
     }
-	
+    
     cudaSetDevice(max_device);
     return max_device; 
 }
@@ -64,7 +64,7 @@ extern "C" void dft(float* samples, int size, float* real, float* imag) {
 
     int i;
     for (i = 0; i < size; i++) {
-		complex_samples[i] = make_cuComplex(samples[i], 0);
+        complex_samples[i] = make_cuComplex(samples[i], 0);
     }
 
     cuComplex *d_input, *d_output;
