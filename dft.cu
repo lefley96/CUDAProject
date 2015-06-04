@@ -30,10 +30,11 @@ __global__ void dftKernel(cuComplex *input, cuComplex *output, int size) {
 
 int chooseAndSetBestDevice() {
 	int num_devices, device;
+	int max_multiprocessors = 0, max_device = 0;
 	
 	cudaGetDeviceCount(&num_devices);
 	if (num_devices > 1) {
-		  int max_multiprocessors = 0, max_device = 0;
+		  
 		  for (device = 0; device < num_devices; device++) {
 				  cudaDeviceProp properties;
 				  cudaGetDeviceProperties(&properties, device);
@@ -43,6 +44,7 @@ int chooseAndSetBestDevice() {
 				  }
 	}
 	cudaSetDevice(max_device);
+	return max_device; 
 }
 
 int getThreadsPerBlock(int currentDevice) {
